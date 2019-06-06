@@ -66,6 +66,28 @@ function createShaderFromScript(gl, type, scriptId) {
 }
 
 // 创建程序
+function createProgram(gl, vertexShader, fragmentShader) {
+  let program = gl.createProgram();
+  vertexShader && gl.attachShader(program, vertexShader);
+  fragmentShader && gl.attachShader(program, fragmentShader);
+  gl.linkProgram(program);
+  let result = gl.getProgramParameter(program, gl.LINK_STATUS);
+  if (result) {
+    console.log('着色器程序创建成功');
+    let uniformSetters = createUniformSetters(gl, program);
+    let attributeSetters = createAttributeSetters(gl, program);
+    return {
+      program: program,
+      uniformSetters: uniformSetters,
+      attributeSetters: attributeSetters
+    };
+    return program;
+  }
+  let errorLog = gl.getProgramInfoLog(program);
+  gl.deleteProgram(program);
+  throw errorLog;
+}
+// 创建简单的着色器程序
 function createSimpleProgram(gl, vertexShader, fragmentShader) {
   if (!vertexShader || !fragmentShader) {
     console.warn('着色器不能为空');
